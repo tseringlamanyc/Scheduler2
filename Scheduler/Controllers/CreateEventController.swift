@@ -18,7 +18,7 @@ class CreateEventController: UIViewController {
   
   // private for setting
   // public for getting
-  public private(set) var eventState = EventState.newEvent
+  public private(set) var eventState = EventState.newEvent // can change in this VC but other VC is read only 
   
   override func viewDidLoad() {
     super.viewDidLoad()
