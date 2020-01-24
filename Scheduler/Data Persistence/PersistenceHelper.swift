@@ -30,6 +30,7 @@ class DataPersistence<T: Writeable> {
     private var items: [T]
     
     // step 2: defining a delegate a reference property that will be registered as the object listening for notifications
+    // weak used to break the strong reference cycle 
     weak var delegate: DataPersistenceDelegate?
     
     public init(filename: String) {
@@ -108,7 +109,7 @@ class DataPersistence<T: Writeable> {
         do {
             try saveItemsToDocumentsDirectory()
             
-            // step 3 - use custom delegation reference to notify observer of deletion 
+            // step 3 - use custom delegation reference to notify observer of deletion
             delegate?.didDeleteItem(persistenceHelper: self, item: deletedItem)
         } catch {
             throw DataPersistenceError.deletingError
