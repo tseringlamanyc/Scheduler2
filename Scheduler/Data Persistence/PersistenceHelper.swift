@@ -71,6 +71,27 @@ class DataPersistence {
   }
   
   // Update
+    @discardableResult // silences the warning if a the return value is not used
+    public func updateEvents(old: Event, new: Event) -> Bool {
+        if let index = items.firstIndex(of: old) {  // old == new (Event must conform to Equatable)
+            let result = update(item: new, index: index)
+            return result
+        }
+        return false
+    }
+    
+    @discardableResult
+    public func update(item: Event, index: Int) -> Bool {
+        items[index] = item
+        
+        // save items to documents directory
+        do {
+            try saveItemsToDocumentsDirectory()
+            return true
+        } catch {
+            return false
+        }
+    }
   
   // Delete
   public func deleteItem(at index: Int) throws {

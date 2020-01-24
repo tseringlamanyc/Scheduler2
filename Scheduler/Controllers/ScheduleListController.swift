@@ -73,9 +73,13 @@ class ScheduleListController: UIViewController {
     }
     
     private func update(oldEvent: Event, with newEvent: Event) {
+        
         // update item in documents directory
+        dataPersistence.updateEvents(old: oldEvent, new: newEvent)
         
         // call load items to update events array
+        // retrieve items from documents directory 
+        loadItems()
     }
     
     private func createNewEvent(event: Event) {
