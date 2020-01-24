@@ -29,6 +29,7 @@ class SchedulesTabController: UITabBarController {
             fatalError("Couldnt load nav controller")
         }
         // set data persistence property
+        recentlyCompletedController.dataPersistence = dataPersistence
         return navController
     } ()
 
