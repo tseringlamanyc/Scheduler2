@@ -16,12 +16,12 @@ public enum DataPersistenceError: Error {
   case noContentsAtPath(String)
 }
 
-
-class DataPersistence {
+typealias Writeable = Codable & Equatable
+class DataPersistence<T: Writeable> {
   
   private let filename: String
   
-  private var items: [Event]
+  private var items: [T]
       
   public init(filename: String) {
     self.filename = filename
@@ -39,7 +39,7 @@ class DataPersistence {
   }
   
   // Create
-  public func createItem(_ item: Event) throws {
+  public func createItem(_ item: T) throws {
     _ = try? loadItems()
     items.append(item)
     do {
@@ -50,12 +50,12 @@ class DataPersistence {
   }
   
   // Read
-  public func loadItems() throws -> [Event] {
+  public func loadItems() throws -> [T] {
     let path = FileManager.getPath(with: filename, for: .documentsDirectory).path
      if FileManager.default.fileExists(atPath: path) {
        if let data = FileManager.default.contents(atPath: path) {
          do {
-           items = try PropertyListDecoder().decode([Event].self, from: data)
+           items = try PropertyListDecoder().decode([T].self, from: data)
          } catch {
           throw DataPersistenceError.propertyListDecodingError(error)
          }
@@ -65,14 +65,14 @@ class DataPersistence {
   }
   
   // for re-ordering, and keeping date in sync
-  public func synchronize(_ items: [Event]) {
+  public func synchronize(_ items: [T]) {
     self.items = items
     try? saveItemsToDocumentsDirectory()
   }
   
   // Update
     @discardableResult // silences the warning if a the return value is not used
-    public func updateEvents(old: Event, new: Event) -> Bool {
+    public func updateEvents(old: T, new: T) -> Bool {
         if let index = items.firstIndex(of: old) {  // old == new (Event must conform to Equatable)
             let result = update(item: new, index: index)
             return result
@@ -81,7 +81,7 @@ class DataPersistence {
     }
     
     @discardableResult
-    public func update(item: Event, index: Int) -> Bool {
+    public func update(item: T, index: Int) -> Bool {
         items[index] = item
         
         // save items to documents directory
@@ -103,7 +103,7 @@ class DataPersistence {
     }
   }
   
-  public func hasItemBeenSaved(_ item: Event) -> Bool {
+  public func hasItemBeenSaved(_ item: T) -> Bool {
     guard let items = try? loadItems() else {
       return false
     }
