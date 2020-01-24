@@ -13,6 +13,7 @@ class CompletedScheduleController: UIViewController {
   private var completedEvents = [Event]() {
     didSet {
       // code here
+        guard let tableView = tableView else {return}
         tableView.reloadData()
     }
   }
@@ -57,7 +58,11 @@ extension CompletedScheduleController: UITableViewDataSource {
       completedEvents.remove(at: indexPath.row)
       
       // TODO: persist change
-        
+        do {
+            try completedEventPersistence.deleteItem(at: indexPath.row)
+        } catch {
+            print(error)
+        }
     }
   }
 }
